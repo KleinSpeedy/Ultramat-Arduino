@@ -6,6 +6,10 @@
 //Include Modul
 #include "Commands.h"
 #include <util/delay.h>
+#include <Arduino.h>
+
+// command byte position in frame
+static constexpr const uint8_t CMD_POS = 0x01;
 
 void CommandHandler::setStepperSpeedAndAcceleration(
     AccelStepper *stepper,
@@ -14,6 +18,26 @@ void CommandHandler::setStepperSpeedAndAcceleration(
 {
     stepper->setMaxSpeed(speed);
     stepper->setAcceleration(acceleration);
+}
+
+bool CommandHandler::writeSerialData(uint8_t *data)
+{
+    Serial.write(*data);
+
+    return true;
+}
+
+void CommandHandler::Cmd_HelloThere()
+{
+    uint8_t tx = 0xFF;
+    bool ret = writeSerialData(&tx);
+    (void *) ret;
+}
+
+void CommandHandler::Cmd_HappyLanding()
+{
+    uint8_t tx = 0xEE;
+    bool ret = writeSerialData(&tx);
 }
 
 void CommandHandler::Cmd_HomingX()
@@ -66,4 +90,56 @@ void CommandHandler::Cmd_HomingY()
 void CommandHandler::Cmd_ChangePosition()
 {
 
+}
+
+void CommandHandler::Cmd_FillGlass()
+{
+
+}
+
+void CommandHandler::Cmd_StopMove()
+{
+
+}
+
+void CommandHandler::execute(uint8_t *rxBuffer)
+{
+    switch(rxBuffer[CMD_POS])
+    {
+        case CMD::helloThere:
+        {
+            Cmd_HelloThere();
+            break;
+        }
+        case CMD::happyLanding:
+        {
+            Cmd_HelloThere();
+            break;
+        }
+        case CMD::homing_X_Axis:
+        {
+            Cmd_HomingX();
+            break;
+        }
+        case CMD::homing_Y_Axis:
+        {
+            Cmd_HomingY();
+            break;
+        }
+        case CMD::changePosition:
+        {
+            Cmd_ChangePosition();
+            break;
+        }
+        case CMD::fillGlass:
+        {
+            Cmd_FillGlass();
+            break;
+        }
+        case CMD::stop:
+        {
+            Cmd_StopMove();
+            break;
+        }
+    }
 }

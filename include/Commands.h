@@ -16,12 +16,16 @@ public:
                    uint8_t *rBuffer,
                    uint8_t *tBuffer) :
                    stepperX_{sX},
-                   stepperY_{sY},
-                   recieveBuffer_{rBuffer},
-                   transmitBuffer_{tBuffer} {};
+                   stepperY_{sY} {};
 
     ~CommandHandler();
     
+    /**
+     * @brief Execute the specified command
+     * @param rxBuffer recieve buffer
+    */
+    void execute(uint8_t *rxBuffer);
+
     /**
      * @brief Set home-position of X-Axis stepper-motor.
      * 
@@ -38,7 +42,17 @@ public:
 
     void Cmd_FillGlass();
 
-    void Cmd_Stop();
+    void Cmd_StopMove();
+
+    /**
+     * @brief Establish Connection with base-station and send ok
+    */
+    void Cmd_HelloThere();
+
+    /**
+     * @brief Disable motors and send ok
+    */
+    void Cmd_HappyLanding();
 
 private:
 
@@ -46,9 +60,10 @@ private:
     AccelStepper *stepperX_;
     // Stepper Control for Y-Axis
     AccelStepper *stepperY_;
-
-    const uint8_t *recieveBuffer_;
-    uint8_t *transmitBuffer_;
+    // recieve buffer
+    const uint8_t *rxBuffer_;
+    // transmit buffer
+    uint8_t *txBuffer_;
 
     void setStepperSpeedAndAcceleration(
         AccelStepper *stepper,
@@ -56,4 +71,23 @@ private:
         float acceleration);
 
     uint32_t decodePosition();
+
+    bool writeSerialData(uint8_t *data);
+
+    /**
+     * @brief byte values representing each command
+    */
+    enum CMD : uint8_t
+    {
+        /* "setup" commands */
+        helloThere      = 0xE0, /* initial hello */
+        happyLanding    = 0xE1, /* end connection "nicely" */
+
+        /* "normal" commands */
+        homing_X_Axis   = 0xC0, /* homing X-axis */
+        homing_Y_Axis   = 0xC1, /* homing Y-axis */
+        changePosition  = 0xC2, /* move to specific position */
+        fillGlass       = 0xC3, /* up and down motion */
+        stop            = 0xC4  /* "emergency" stop */
+    };
 };
