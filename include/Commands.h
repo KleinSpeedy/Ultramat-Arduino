@@ -27,32 +27,9 @@ public:
     void execute(uint8_t *rxBuffer);
 
     /**
-     * @brief Set home-position of X-Axis stepper-motor.
-     * 
-     * Homing is done with a switch. Stepper moves until it reaches Homing-Switch. 
-     * After making contact it moves back and sets Homing-Position.
-     */
-    void Cmd_HomingX();
-
-    void Cmd_HomingY();
-
-    void Cmd_ChangePosition();
-
-    void Cmd_SetParameters();
-
-    void Cmd_FillGlass();
-
-    void Cmd_StopMove();
-
-    /**
-     * @brief Establish Connection with base-station and send ok
+     * @brief Send error
     */
-    void Cmd_HelloThere();
-
-    /**
-     * @brief Disable motors and send ok
-    */
-    void Cmd_HappyLanding();
+   void Cmd_SendError();
 
 private:
 
@@ -90,4 +67,33 @@ private:
         fillGlass       = 0xC3, /* up and down motion */
         stop            = 0xC4  /* "emergency" stop */
     };
+
+    /**
+     * @brief Set home-position of X-Axis stepper-motor.
+     * 
+     * Homing is done with a switch. Stepper moves until it reaches Homing-Switch. 
+     * After making contact it moves back and sets Homing-Position.
+     */
+    void Cmd_HomingX();
+
+    void Cmd_HomingY();
+
+    void Cmd_ChangePosition();
+
+    void Cmd_SetParameters();
+
+    void Cmd_FillGlass();
+
+    void Cmd_StopMove();
+
+    /**
+     * @brief Establish Connection with base-station and send ok
+    */
+    void Cmd_HelloThere();
+
+    /**
+     * @brief Disable motors and send ok
+    */
+    void Cmd_HappyLanding();
+
 };

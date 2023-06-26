@@ -61,6 +61,7 @@ void setup()
 
 void loop()
 {
+    // TODO: use timers and/or interrupts for reading serial data
     if(Serial.available() > 0)
     {
         uint8_t recievedData = (uint8_t)Serial.read();
@@ -129,13 +130,13 @@ void loop()
                     {
                         g_protocolStatus = RecieverStatus::idle;
                         g_recieveBuffer[bufferIndex] = recievedData;
-
+                        // TODO: Do this outside if statement
                         g_cmdHandle->execute(g_recieveBuffer);
                     }
                     else
                     {
-                        // Error handling
-                        Serial.write(ERROR);
+                        // TODO: Send meaningful codes if possible
+                        g_cmdHandle->Cmd_SendError();
                     }
                     break;
                 }
