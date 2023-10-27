@@ -12,6 +12,9 @@ set(ULTRA_INC_DIR ${CMAKE_SOURCE_DIR}/include)
 set(TOOLCHAIN_DIR ${AVR_TOOLCHAIN_PATH} CACHE STRING "User specified toolchain path")
 # include avr toolchain script
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/scripts/cmake/toolchain-avr.cmake)
+# Include compile commands for clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Project CPU, TODO: Set differently
 set(ULTRA_MCU "atmega328p")
 
 project(UltrAvr C CXX ASM)

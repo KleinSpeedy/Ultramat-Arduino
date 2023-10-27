@@ -23,9 +23,13 @@ tar -xf avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz
 ./bootstrap.sh
 ```
 
+For autocompletion using `clangd` you need to build the project and copy
+the generated `compile_commands.json` into the project root or build directory.
+
 ## Build Firmware
 
 Build the firmware for release using:
 ```sh
-cmake --build build/rls/
+./dewit.sh
 ```
+

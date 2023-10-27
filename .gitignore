@@ -1,3 +1,7 @@
+# generated stuff
+compile_commands.json
+.cache
+
 # build dir
 build
 
