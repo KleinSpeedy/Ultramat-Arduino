@@ -19,4 +19,4 @@ function makeTarget()
         -DAVR_TOOLCHAIN_PATH:STRING=$TOOLCHAIN_DIR
 }
 
-makeTarget release rls
+makeTarget release
