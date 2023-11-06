@@ -1,0 +1,3 @@
+[submodule "ext/Arduino-Core"]
+	path = ext/Arduino-Core
+	url = https://github.com/KleinSpeedy/Arduino-Core.git
