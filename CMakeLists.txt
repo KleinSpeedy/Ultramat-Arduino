@@ -62,12 +62,23 @@ set(ULTRA_DEFINITIONS
 #
 # External libraries
 #
+# TODO: Find better way than to set here directly
+
+# Core library
 set(CORE_WRAPPER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/Arduino-Core CACHE STRING "")
 set(CORE_WRAPPER_DEFS ${ULTRA_DEFINITIONS} CACHE STRING "")
 set(CORE_WRAPPER_OPTS ${ULTRA_COMPILE_FLAGS} CACHE STRING "")
 
 add_subdirectory(ext/Arduino-Core)
 
+# Accelstepper library
+set(ACCEL_WRAPPER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/Arduino-Accelstepper CACHE STRING "")
+set(ACCEL_WRAPPER_ARDUINO_INC_DIR ${CORE_WRAPPER_DIR}/include CACHE STRING "")
+set(ACCEL_WRAPPER_PINOUT_HEADER ${CORE_WRAPPER_DIR}/variants/standard CACHE STRING "")
+set(ACCEL_WRAPPER_DEFS ${ULTRA_DEFINITIONS} CACHE STRING "")
+set(ACCEL_WRAPPER_OPTS ${ULTRA_COMPILE_FLAGS} CACHE STRING "")
+
+add_subdirectory(ext/Arduino-Accelstepper)
 
 #
 # Firmware Targets
@@ -88,7 +99,7 @@ target_compile_definitions(${ELF_TARGET} PRIVATE ${ULTRA_DEFINITIONS})
 
 # Add include directories
 target_include_directories(${ELF_TARGET} PRIVATE ${ULTRA_INC_DIR})
-target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper)
+target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper accelstepper-wrapper)
 
 #
 # Custom Targets
