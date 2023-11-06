@@ -60,6 +60,16 @@ set(ULTRA_DEFINITIONS
 
 
 #
+# External libraries
+#
+set(CORE_WRAPPER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/Arduino-Core CACHE STRING "")
+set(CORE_WRAPPER_DEFS ${ULTRA_DEFINITIONS} CACHE STRING "")
+set(CORE_WRAPPER_OPTS ${ULTRA_COMPILE_FLAGS} CACHE STRING "")
+
+add_subdirectory(ext/Arduino-Core)
+
+
+#
 # Firmware Targets
 #
 
@@ -74,9 +84,11 @@ add_executable(${ELF_TARGET} ${Ultra_srcs})
 
 # Add target flags
 target_compile_options(${ELF_TARGET} PRIVATE ${ULTRA_FLAGS})
+target_compile_definitions(${ELF_TARGET} PRIVATE ${ULTRA_DEFINITIONS})
+
 # Add include directories
 target_include_directories(${ELF_TARGET} PRIVATE ${ULTRA_INC_DIR})
-
+target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper)
 
 #
 # Custom Targets
