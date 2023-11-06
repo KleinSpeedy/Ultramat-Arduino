@@ -23,7 +23,7 @@ project(UltrAvr C CXX ASM)
 #
 # Source files
 #
-include(${ULTRA_SRC_DIR}/sources.cmake)
+include(${ULTRA_SRC_DIR}/Filelist.cmake)
 
 
 #
