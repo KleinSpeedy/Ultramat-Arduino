@@ -26,6 +26,24 @@ tar -xf avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz
 For autocompletion using `clangd` you need to build the project and copy
 the generated `compile_commands.json` into the project root or build directory.
 
+### Setup Docker
+
+Build Image:
+```sh
+docker build -t ultra-arduino-builder .
+```
+
+Run Docker image:
+```sh
+docker run --rm -it -v $(pwd):/ultra-arduino ultra-arduino-builder
+```
+
+Bootstrap and build inside container are the same as on host system.
+
+> **NOTE:**
+> Building inside the docker container always uses the root user, which could
+> lead to problems with a mounted directory!
+
 ## Build Firmware
 
 Build the firmware for release using:
