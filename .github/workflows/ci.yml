@@ -1,0 +1,21 @@
+name: Ultramat-Arduino build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build docker image
+        run: docker build -t ultra-arduino-builder .
+      - name: Build code
+        run: |
+          docker run --rm -it -v $(pwd):/ultra-arduino-builder \
+          -c "./bootstrap.sh && ./dewit.sh" 
