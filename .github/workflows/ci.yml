@@ -17,5 +17,4 @@ jobs:
         run: docker build -t ultra-arduino-builder .
       - name: Build code
         run: |
-          docker run -it -v $(pwd):/ultra-arduino ultra-arduino-builder \
-          /bin/bash -c "./bootstrap.sh && ./dewit.sh" 
+          docker run -it -v $(pwd):/ultra-arduino ultra-arduino-builder /bin/bash -c "./bootstrap.sh && ./dewit.sh" 
