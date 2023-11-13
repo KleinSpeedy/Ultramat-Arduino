@@ -1,12 +1,27 @@
-#include "Commands.h"
+#include "util/Device.h"
+#include "Communicator.h"
+#include "ErrorHandling.h"
 
 int main()
 {
-    int sum = add(1, 2);
+    // initialize MCU
+    Device::initMcu();
 
-    while(true)
+    Communicator comm;
+
+    // initialize communication
+    if(!comm.start())
     {
+        Errors::handleNotRecoverable(Errors::Type::Communication);
     }
 
-    return sum;
+    // begin
+    while(true)
+    {
+        // handle queue
+
+        // handle command
+
+        // handle command success?
+    }
 }
