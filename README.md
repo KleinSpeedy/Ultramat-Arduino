@@ -40,14 +40,14 @@ docker run --rm -it -v $(pwd):/ultra-arduino ultra-arduino-builder
 
 Bootstrap and build inside container are the same as on host system.
 
-> **NOTE:**
+> **NOTE**
 > Building inside the docker container always uses the root user, which could
 > lead to problems with a mounted directory!
 
 ## Build Firmware
 
-Build the firmware for release using:
+For building firmware, try:
 ```sh
-./dewit.sh
+./dewit.sh -h
 ```
 
