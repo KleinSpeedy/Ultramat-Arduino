@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.22)
+    message("Using older CMake version than 3.22")
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.{CMAKE_MINOR_VERSION})
+endif()
 
 #
 # Project Configurations
@@ -17,7 +22,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Project CPU, TODO: Set differently
 set(ULTRA_MCU "atmega328p")
 
-project(UltrAvr C CXX ASM)
+project(UltrAvr
+    LANGUAGES
+    C CXX ASM)
 
 
 #
@@ -30,10 +37,10 @@ include(${ULTRA_SRC_DIR}/Filelist.cmake)
 # Linker Flags
 #
 set(ULTRA_LINKER_FLAGS
+    "-mmcu=${ULTRA_MCU}"
     "-lc"
     "-lm"
     "-lgcc"
-    "-mmcu=${ULTRA_MCU}"
     "-Wl"
 )
 
@@ -44,11 +51,18 @@ set(ULTRA_LINKER_FLAGS
 set(ULTRA_COMPILE_FLAGS
     "-mmcu=${ULTRA_MCU}"
     "-Os"
-    "-std=gnu++11"
+    "-std=gnu++14"
     "-fno-exceptions"
     "-ffunction-sections"
     "-fdata-sections"
 )
+
+if(ULTRA_BUILD_DEBUG)
+    list(APPEND ULTRA_COMPILE_FLAGS
+        "-g"
+        "-ggdb"
+        )
+endif()
 
 
 #
@@ -56,7 +70,7 @@ set(ULTRA_COMPILE_FLAGS
 #
 set(ULTRA_DEFINITIONS
     "-DF_CPU=16000000UL"
-)
+    )
 
 
 #
@@ -94,11 +108,11 @@ set(LST_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.lst)
 add_executable(${ELF_TARGET} ${Ultra_srcs})
 
 # Add target flags
-target_compile_options(${ELF_TARGET} PRIVATE ${ULTRA_FLAGS})
+target_compile_options(${ELF_TARGET} PRIVATE ${ULTRA_COMPILE_FLAGS})
 target_compile_definitions(${ELF_TARGET} PRIVATE ${ULTRA_DEFINITIONS})
 
 # Add include directories
-target_include_directories(${ELF_TARGET} PRIVATE ${ULTRA_INC_DIR})
+target_include_directories(${ELF_TARGET} PUBLIC ${ULTRA_INC_DIR})
 target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper accelstepper-wrapper)
 
 #
