@@ -10,13 +10,19 @@ HERE=$(pwd)
 
 function makeTarget()
 {
-    NAME=$1
+    DEBUG=$1
     BUILD_DIR=$2
+
+    echo "===================="
+    echo "Building target: $BUILD_DIR"
+    echo "===================="
 
     cmake \
         -B build/$2 \
         -S $HERE \
+        -DULTRA_BUILD_DEBUG:NUMBER=$DEBUG \
         -DAVR_TOOLCHAIN_PATH:STRING=$TOOLCHAIN_DIR
 }
 
-makeTarget release
+makeTarget 0 release
+makeTarget 1 debug
