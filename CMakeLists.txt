@@ -42,6 +42,7 @@ set(ULTRA_LINKER_FLAGS
     "-lm"
     "-lgcc"
     "-Wl"
+    "-Map,${MAP_TARGET}"
 )
 
 
@@ -98,56 +99,7 @@ add_subdirectory(ext/Arduino-Accelstepper)
 # Firmware Targets
 #
 
-# define all target names
-set(ELF_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.elf)
-set(HEX_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.hex)
-set(MAP_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.map)
-set(LST_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.lst)
-
 # add ELF target
-add_executable(${ELF_TARGET} ${Ultra_srcs})
+#add_executable(${ELF_TARGET} ${Ultra_srcs})
 
-# Add target flags
-target_compile_options(${ELF_TARGET} PRIVATE ${ULTRA_COMPILE_FLAGS})
-target_compile_definitions(${ELF_TARGET} PRIVATE ${ULTRA_DEFINITIONS})
-
-# Add include directories
-target_include_directories(${ELF_TARGET} PUBLIC ${ULTRA_INC_DIR})
-target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper accelstepper-wrapper)
-
-#
-# Custom Targets
-#
-
-# print size of memory regions
-add_custom_command(
-    OUTPUT "print-size-${ELF_TARGET}"
-
-    COMMAND
-        ${AVR_SIZE} ${ELF_TARGET}
-
-    DEPENDS ${elf_file}
-)
-
-# generate the lst file
-add_custom_command(
-    OUTPUT ${LST_TARGET}
-    COMMAND
-        ${CMAKE_OBJDUMP} -h -S ${ELF_TARGET} > ${LST_TARGET}
-    DEPENDS ${ELF_TARGET}
-)
-
-# create hex file
-add_custom_command(
-    OUTPUT ${HEX_TARGET}
-    COMMAND
-        ${CMAKE_OBJCOPY} -j .text -j .data -O ihex ${ELF_TARGET} ${HEX_TARGET}
-    DEPENDS ${ELF_TARGET}
-)
-
-# build the intel hex file for the device
-add_custom_target(
-    ${PROJECT_NAME}
-    ALL
-    DEPENDS ${ELF_TARGET} ${LST_TARGET} "print-size-${ELF_TARGET}"
-)
+add_avr_executable(${PROJECT_NAME} "atmega328p")
