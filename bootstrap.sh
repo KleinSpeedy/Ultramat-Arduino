@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # Bootstrap the Ultramat Arduino project, find avr toolchain, configure CMake
@@ -8,7 +8,7 @@
 TOOLCHAIN_DIR=/opt/avr8-gnu-toolchain-linux_x86_64
 HERE=$(pwd)
 
-function makeTarget()
+makeTarget()
 {
     DEBUG=$1
     BUILD_DIR=$2
