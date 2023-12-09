@@ -4,7 +4,6 @@
 // project includes
 // system includes
 #include <avr/io.h>
-#include <avr/delay.h>
 #include <util/delay.h>
 
 namespace Errors {
