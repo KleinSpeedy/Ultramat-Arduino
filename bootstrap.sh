@@ -26,3 +26,7 @@ makeTarget()
 
 makeTarget 0 release
 makeTarget 1 debug
+
+if [ -f $HERE/build/debug/compile_commands.json ]; then
+    cp $HERE/build/debug/compile_commands.json $HERE/build/
+fi
