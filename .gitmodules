@@ -1,6 +1,3 @@
-[submodule "ext/Arduino-Core"]
-	path = ext/Arduino-Core
-	url = https://github.com/KleinSpeedy/Arduino-Core.git
-[submodule "ext/Arduino-Accelstepper"]
-	path = ext/Arduino-Accelstepper
-	url = https://github.com/KleinSpeedy/Arduino-Accelstepper.git
+[submodule "ext/ArduinoCore-avr"]
+	path = ext/ArduinoCore-avr
+	url = https://github.com/arduino/ArduinoCore-avr.git
