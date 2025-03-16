@@ -1,139 +1,75 @@
 cmake_minimum_required(VERSION 3.16)
 
-#
-# Project Configurations
-#
+# Use the AVR toolchain
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE
+        "${CMAKE_SOURCE_DIR}/scripts/cmake/toolchain-avr.cmake"
+        CACHE STRING "Toolchain file")
+endif()
+
+project(UltraArduino C CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Include Arduino Core
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/arduino-core.cmake)
 
 # source directory
 set(ULTRA_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 # include directory
 set(ULTRA_INC_DIR ${CMAKE_SOURCE_DIR}/include)
-# locate avr toolchain, get from bootstrap script
-set(TOOLCHAIN_DIR ${AVR_TOOLCHAIN_PATH} CACHE STRING "User specified toolchain path")
-# include avr toolchain script
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/scripts/cmake/toolchain-avr.cmake)
-# Include compile commands for clangd
+# generate clang files
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# Project CPU, TODO: Set differently
-set(ULTRA_MCU "atmega328p")
-
-project(UltrAvr C CXX ASM)
-
-
-#
-# Source files
-#
-include(${ULTRA_SRC_DIR}/Filelist.cmake)
-
-
-#
-# Linker Flags
-#
-set(ULTRA_LINKER_FLAGS
-    "-lc"
-    "-lm"
-    "-lgcc"
-    "-mmcu=${ULTRA_MCU}"
-    "-Wl"
-)
-
-
-#
-# Compile Flags
-#
-set(ULTRA_COMPILE_FLAGS
-    "-mmcu=${ULTRA_MCU}"
+# Used mcu variant
+set(MCU atmega328p)
+# Compiler Flags
+set(ULTRA_FLAGS
     "-Os"
-    "-std=gnu++11"
+    "-mmcu=${MCU}"
+    "-Wall"
+    "-Wextra"
     "-fno-exceptions"
-    "-ffunction-sections"
-    "-fdata-sections"
-)
-
-
-#
-# Definitions
-#
+    #"-fno-rtti"
+    CACHE STRING "Compiler options")
+# Compiler definitions
 set(ULTRA_DEFINITIONS
     "-DF_CPU=16000000UL"
+    CACHE STRING "Compiler defines")
+# Linker Flags
+set(ULTRA_LINKER_FLAGS
+    "-Wl,--gc-sections"
+    "-mmcu=${MCU}"
+    CACHE STRING "Linker options")
+
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${ARDUINO_CORE_PATH})
+include_directories(${ARDUINO_VARIANT_PATH})
+
+# Source files
+set(Ultra_srcs
+    ${ULTRA_SRC_DIR}/main.cpp
+    ${ULTRA_SRC_DIR}/Commands.cpp
 )
 
+# Firmware
+add_executable(${PROJECT_NAME}.elf ${Ultra_srcs})
 
-#
-# External libraries
-#
-# TODO: Find better way than to set here directly
+target_compile_options(${PROJECT_NAME}.elf PRIVATE ${ULTRA_FLAGS})
+target_compile_options(ArduinoCore PRIVATE ${ULTRA_FLAGS})
 
-# Core library
-set(CORE_WRAPPER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/Arduino-Core CACHE STRING "")
-set(CORE_WRAPPER_DEFS ${ULTRA_DEFINITIONS} CACHE STRING "")
-set(CORE_WRAPPER_OPTS ${ULTRA_COMPILE_FLAGS} CACHE STRING "")
+target_compile_definitions(${PROJECT_NAME}.elf PRIVATE ${ULTRA_DEFINITIONS})
+target_compile_definitions(ArduinoCore PRIVATE ${ULTRA_DEFINITIONS})
 
-add_subdirectory(ext/Arduino-Core)
+target_link_options(${PROJECT_NAME}.elf PRIVATE ${ULTRA_LINKER_FLAGS})
+target_link_options(ArduinoCore PRIVATE ${ULTRA_LINKER_FLAGS})
 
-# Accelstepper library
-set(ACCEL_WRAPPER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/Arduino-Accelstepper CACHE STRING "")
-set(ACCEL_WRAPPER_ARDUINO_INC_DIR ${CORE_WRAPPER_DIR}/include CACHE STRING "")
-set(ACCEL_WRAPPER_PINOUT_HEADER ${CORE_WRAPPER_DIR}/variants/standard CACHE STRING "")
-set(ACCEL_WRAPPER_DEFS ${ULTRA_DEFINITIONS} CACHE STRING "")
-set(ACCEL_WRAPPER_OPTS ${ULTRA_COMPILE_FLAGS} CACHE STRING "")
+# Link Arduino core libraries
+target_link_libraries(${PROJECT_NAME}.elf PRIVATE ArduinoCore)
 
-add_subdirectory(ext/Arduino-Accelstepper)
-
-#
-# Firmware Targets
-#
-
-# define all target names
-set(ELF_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.elf)
-set(HEX_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.hex)
-set(MAP_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.map)
-set(LST_TARGET ${PROJECT_NAME}-${ULTRA_MCU}.lst)
-
-# add ELF target
-add_executable(${ELF_TARGET} ${Ultra_srcs})
-
-# Add target flags
-target_compile_options(${ELF_TARGET} PRIVATE ${ULTRA_FLAGS})
-target_compile_definitions(${ELF_TARGET} PRIVATE ${ULTRA_DEFINITIONS})
-
-# Add include directories
-target_include_directories(${ELF_TARGET} PRIVATE ${ULTRA_INC_DIR})
-target_link_libraries(${ELF_TARGET} PRIVATE core-wrapper accelstepper-wrapper)
-
-#
-# Custom Targets
-#
-
-# print size of memory regions
-add_custom_command(
-    OUTPUT "print-size-${ELF_TARGET}"
-
-    COMMAND
-        ${AVR_SIZE} ${ELF_TARGET}
-
-    DEPENDS ${elf_file}
-)
-
-# generate the lst file
-add_custom_command(
-    OUTPUT ${LST_TARGET}
-    COMMAND
-        ${CMAKE_OBJDUMP} -h -S ${ELF_TARGET} > ${LST_TARGET}
-    DEPENDS ${ELF_TARGET}
-)
-
-# create hex file
-add_custom_command(
-    OUTPUT ${HEX_TARGET}
-    COMMAND
-        ${CMAKE_OBJCOPY} -j .text -j .data -O ihex ${ELF_TARGET} ${HEX_TARGET}
-    DEPENDS ${ELF_TARGET}
-)
-
-# build the intel hex file for the device
-add_custom_target(
-    ${PROJECT_NAME}
-    ALL
-    DEPENDS ${ELF_TARGET} ${LST_TARGET} "print-size-${ELF_TARGET}"
+# Post-build: Convert ELF to HEX for Arduino
+add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
+    COMMENT "Converting ELF to HEX for Arduino upload"
 )
