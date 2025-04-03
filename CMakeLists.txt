@@ -7,7 +7,7 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
         CACHE STRING "Toolchain file")
 endif()
 
-project(UltraArduino C CXX)
+project(UltraArduino LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,6 +50,7 @@ set(ULTRA_LINKER_FLAGS
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${ARDUINO_CORE_PATH})
 include_directories(${ARDUINO_VARIANT_PATH})
+include_directories(${CMAKE_BINARY_DIR})
 
 # Source files
 set(Ultra_srcs
@@ -80,3 +81,12 @@ add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
     COMMENT "Converting ELF to HEX for Arduino upload"
 )
+# Generate version header file with project version
+find_package(Git)
+add_custom_target(version
+    ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/scripts/cmake/ultra_version.h.in
+    -D DST=${CMAKE_BINARY_DIR}/ultra_version.h
+    -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+    -P ${CMAKE_SOURCE_DIR}/scripts/cmake/version-header.cmake
+)
+add_dependencies(${PROJECT_NAME}.elf version)
