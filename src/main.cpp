@@ -1,13 +1,21 @@
-#include <Arduino.h>
+#include "CommandHandler.h"
+#include "util/ErrorHandling.h"
+#include "SerialCommunication.h"
 
-void setup() {
-    Serial.begin(115200);
-    pinMode(LED_BUILTIN, OUTPUT);
-}
+int main(void)
+{
+    using namespace Ultramat;
 
-void loop() {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(500);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(500);
+    SerialComms comms;
+    if(!comms.start())
+    {
+        Errors::handleNotRecoverable(Errors::Type::StartComms);
+    }
+
+    CommandHandler cmdHandler{comms};
+    while(true)
+    {
+        comms.process();
+        cmdHandler.process();
+    }
 }
