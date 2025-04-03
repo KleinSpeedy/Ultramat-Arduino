@@ -55,6 +55,7 @@ include_directories(${CMAKE_BINARY_DIR})
 # Source files
 set(Ultra_srcs
     ${ULTRA_SRC_DIR}/util/ErrorHandling.cpp
+    ${ULTRA_SRC_DIR}/MessageBuffer.cpp
 
     ${ULTRA_SRC_DIR}/main.cpp
     ${ULTRA_SRC_DIR}/Commands.cpp
