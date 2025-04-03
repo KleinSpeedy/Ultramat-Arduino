@@ -8,11 +8,11 @@ WORKDIR /ultra-arduino
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
-    gcc g++ make cmake \
-    git ca-certificates wget tar
+    make cmake git ca-certificates wget tar
 
 RUN wget -v \
     https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/${TOOLCHAIN_AVR}.tar.gz \
     -P /opt
 
-RUN cd /opt && tar xvf ${TOOLCHAIN_AVR}.tar.gz
+RUN tar xf /opt/${TOOLCHAIN_AVR}.tar.gz -C /opt/ && rm /opt/${TOOLCHAIN_AVR}.tar.gz
+ENV PATH="/opt/avr8-gnu-toolchain-linux_x86_64/bin:$PATH"
