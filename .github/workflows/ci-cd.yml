@@ -19,7 +19,7 @@ jobs:
         run: docker pull kleinspeedy/arduino-cross-builder:latest
       - name: Build code
         run: |
-          docker run -v $(pwd):/ultra-arduino kleinspeedy/arduino-cross-builder \
+          docker run -v ${{ github.workspace }}:/ultra-arduino kleinspeedy/arduino-cross-builder \
           /bin/bash -c "./bootstrap.sh && ./dewit.sh" 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
