@@ -19,8 +19,9 @@ jobs:
         run: docker pull kleinspeedy/arduino-cross-builder:latest
       - name: Build code
         run: |
+          # Getting error during build step for dubious ownership
           docker run -v ${{ github.workspace }}:/ultra-arduino kleinspeedy/arduino-cross-builder \
-          /bin/bash -c "./bootstrap.sh && ./dewit.sh" 
+          /bin/bash -c "git config --global --add safe.directory /ultra-arduino && ./bootstrap.sh && ./dewit.sh" 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
