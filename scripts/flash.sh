@@ -15,21 +15,33 @@ done
 FIRMWARE=${1-unset}
 PORT=${2-unset}
 
-if [ ! $# -eq 2 ]; then
-    echo "Invalid number of arguments" 1>&2
+help()
+{
+    echo "Usage for $(basename $0) script:"
+    echo "./$(basename $0) [ Firmware File] [ Serial Port ]"
+}
+
+error()
+{
+    echo "Error: $1" 1>&2
+    if [ $2 ]; then
+        help
+    fi
     exit 1
+}
+
+if [ ! $# -eq 2 ]; then
+    error "Invalid number of arguments" 1
 fi
 
 # Locate file
 if [ ! -f $FIRMWARE ]; then
-    echo "Could not find $FIRMWARE" 1>&2
-    exit 1
+    error "Could not find $FIRMWARE" 1
 fi
 
 # Locate port
-if [ ! -f $PORT ]; then
-    echo "Could not find $PORT" 1>&2
-    exit 1
+if [ ! -c $PORT ]; then
+    error "Could not open or find $PORT" 1
 fi
 
 # Flash hexfile using avrdude
