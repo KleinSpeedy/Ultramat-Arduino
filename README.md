@@ -17,20 +17,19 @@ Extract it to a known location.
 wget -v https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz -P /opt
 
 # Extract sources from archive
-tar -xf avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz
-
-# Configure CMake targets:
-./bootstrap.sh
+tar -xf avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz -C /opt/
 ```
-
-For autocompletion using `clangd` you need to build the project and copy
-the generated `compile_commands.json` into the project root or build directory.
 
 ### Setup Docker
 
 Build Image:
 ```sh
-docker build -t ultra-arduino-builder .
+docker build -t arduino-cross-builder .
+```
+
+Or pull it from dockerhub:
+```sh
+docker pull kleinspeedy/arduino-cross-builder:latest
 ```
 
 Run Docker image:
@@ -48,6 +47,9 @@ Bootstrap and build inside container are the same as on host system.
 
 Build the firmware for release using:
 ```sh
+# Configure CMake targets:
+./bootstrap.sh
+# Build
 ./dewit.sh
 ```
 
